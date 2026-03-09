@@ -41,23 +41,25 @@ antigravity
 3.  **Configuration**:
     *   Copy `.env.example` to `.env` (if applicable) and fill in your API keys.
 
-## Installation Log (Fresh Start - 2026-02-14)
+## Installation Log (Docker Deployment - 2026-03-09)
 
-### 1. Cleanup
-*   Removed existing `openclaw` directory.
-*   Stopped all old Node processes (`pm2`, `node`).
-*   Verified clean state.
+### 1. Requirements
+*   Docker & Docker Compose installed.
+*   Your OpenClaw configurations stored in `~/.openclaw` (auto-mounted to the container).
+*   Any local AI model endpoints accessible from the Docker network.
 
-### 2. Dependencies & Build
-*   Installed global tools: `npm install -g pnpm pm2`
-*   Cloned fresh repository: `git clone https://github.com/openclaw/openclaw.git openclaw`
-*   Installed dependencies: `cd openclaw && pnpm install`
-*   Built the project: `pnpm ui:build && pnpm build` (This ensures the UI and backend are compiled).
+### 2. Deploy OpenClaw Gateway
+1.  Navigate to the cloned repository: `cd ./openclaw`
+2.  Start the service using Docker Compose in detached mode:
+    ```bash
+    docker-compose up -d
+    ```
+3.  This spins up the `openclaw-core` container, binding local port `18789` and mounting necessary volumes. It is configured to `restart: unless-stopped`, ensuring it boots on startup.
 
 ### 3. Verification
-*   Started gateway: `pm2 start scripts/run-node.mjs --name openclaw -- gateway --port 18789 --verbose`
-*   Verified listening port: `lsof -i :18789` (shows `node` listening).
-*   Logs check: verified `~/.pm2/logs/openclaw-error.log` and `openclaw-out.log`.
+*   Check running containers: `docker ps | grep openclaw-core`
+*   View live logs: `docker logs -f openclaw-core`
+*   Open the Dashboard URL in your browser to confirm functionality.
 
 ## Testing / Verification Guide
 
